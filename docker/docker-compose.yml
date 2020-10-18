@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  question_doc_converter:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    command: poetry run flask run -h 0 -p 80
+    volumes:
+      - ../:/app
+    env_file:
+      - ../.env
+    ports:
+      - 8000:80
