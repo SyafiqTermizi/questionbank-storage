@@ -264,3 +264,5 @@ tags
 
 static/bundles
 .env
+
+storage

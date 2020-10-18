@@ -12,3 +12,17 @@ services:
       - ../.env
     ports:
       - 8000:80
+  question_storage:
+    image: minio/minio
+    volumes:
+      - ../storage/:/data
+    ports:
+      - 9000:9000
+    env_file:
+      - ../.env
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
