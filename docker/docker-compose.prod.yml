@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  question_doc_converter:
+    build:
+      context: ../
+      dockerfile: ./docker/prod.Dockerfile
+    command: poetry run gunicorn converter:app --bind 0:80
+    env_file:
+      - ../.env
+
+  question_storage:
+    image: minio/minio
+    volumes:
+      - ../storage/:/data
+    ports:
+      - 9000:9000
+    env_file:
+      - ../.env
+    command: server /data
+
+  question_doc_server:
+    image: nginx:1.19.3-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - question_doc_converter
+      - question_storage
