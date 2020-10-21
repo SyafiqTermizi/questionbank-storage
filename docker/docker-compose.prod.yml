@@ -2,9 +2,7 @@ version: "3"
 
 services:
   question_doc_converter:
-    build:
-      context: ../
-      dockerfile: ./docker/prod.Dockerfile
+    image: docker.pkg.github.com/syafiqtermizi/questionbank-storage/qbankstorage:latest
     command: poetry run gunicorn converter:app --bind 0:80
     env_file:
       - ../.env
