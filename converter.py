@@ -2,10 +2,7 @@ import os
 from datetime import datetime
 
 import pypandoc
-from flask import Flask, request
-from minio import Minio
-from minio.error import ResponseError, BucketAlreadyOwnedByYou, BucketAlreadyExists
-
+from flask import Flask, request, send_file, url_for
 
 app = Flask(__name__)
 
@@ -21,19 +18,11 @@ def index():
     )
 
     bucket_name = os.environ.get("QUESTION_BUCKET_NAME")
-    minio_client = Minio(
-        os.environ.get("QUESTION_STORAGE_HOST"),
-        access_key=os.environ.get("MINIO_ACCESS_KEY"),
-        secret_key=os.environ.get("MINIO_SECRET_KEY"),
-        secure=False,
-    )
 
-    try:
-        minio_client.make_bucket(bucket_name)
-    except BucketAlreadyOwnedByYou as err:
-        pass
-    except BucketAlreadyExists as err:
-        pass
+    return {"file": url_for("get_file", file_name=output_file_name, _external=True)}
 
-    minio_client.fput_object(bucket_name, output_file_name, full_output_file_path)
-    return {"file": minio_client.presigned_get_object(bucket_name, output_file_name)}
+
+@app.route("/files/<file_name>")
+def get_file(file_name):
+    path = f"temp/{file_name}"
+    return send_file(path, "application/vnd.oasis.opendocument.text")

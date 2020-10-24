@@ -7,16 +7,6 @@ services:
     env_file:
       - ../.env
 
-  question_storage:
-    image: minio/minio
-    volumes:
-      - ../storage/:/data
-    env_file:
-      - ../.env
-    command: server /data
-    ports:
-      - 9000:9000
-
   question_doc_server:
     image: nginx:1.19.3-alpine
     ports:
@@ -24,5 +14,4 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - question_doc_converter
       - question_storage
